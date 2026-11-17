@@ -1,5 +1,6 @@
 package com.takemybible.backend.controller.cross_reference;
 
+import com.takemybible.backend.security.AuthenticatedUser;
 import com.takemybible.backend.service.CrossReferenceService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.takemybible.backend.entity.CrossReferenceVotes;
 import com.takemybible.backend.repository.CrossReferenceVotesRepository;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @RestController
@@ -33,38 +36,17 @@ public class CrossReferenceVotesController {
     /**
      * @param voteValue is always either 1 or -1 indicating up or down vote
      */
-    @PostMapping("/{crossReferenceId}/{userId}/{voteValue}")
-public ResponseEntity<Void> makeVote(
-        @PathVariable Long crossReferenceId,
-        @PathVariable Long userId,
-        @PathVariable Integer voteValue) {
+    @PostMapping("/{crossReferenceId}/{voteValue}")
+    public ResponseEntity<Void> makeVote(
+            @PathVariable Long crossReferenceId,
+            @PathVariable Integer voteValue, @AuthenticationPrincipal AuthenticatedUser user) {
 
-    CrossReferenceVotes existing =
-            crossReferenceVotesRepository.findOneByUserIdAndCrossReferenceId(userId, crossReferenceId);
-
-    if (voteValue == -1 ) {
-        log.debug("making a down vote");
-    } else {
-        log.debug("making an up vote");
+        if (voteValue > 1 || voteValue < -1) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!crossReferenceService.exists(crossReferenceId)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return crossReferenceService.vote(user.id(),  crossReferenceId, voteValue);
     }
-    if (existing == null) {
-        // New vote
-        crossReferenceVotesRepository.save(new CrossReferenceVotes(userId, crossReferenceId, voteValue));
-        crossReferenceService.updateVotes(crossReferenceId, voteValue);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    if (!existing.getValue().equals(voteValue)) {
-        // Switching up <-> down
-        existing.setValue(voteValue);
-        crossReferenceVotesRepository.save(existing);
-        crossReferenceService.updateVotes(crossReferenceId, voteValue * 2);
-    } else {
-        // Same vote again: undo it
-        crossReferenceVotesRepository.delete(existing);
-        crossReferenceService.updateVotes(crossReferenceId, -voteValue);
-    }
-
-    return ResponseEntity.noContent().build();
-}
 }

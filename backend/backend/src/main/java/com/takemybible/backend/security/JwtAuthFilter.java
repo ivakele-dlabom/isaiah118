@@ -1,10 +1,12 @@
 package com.takemybible.backend.security;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -33,13 +35,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
 
             if (jwtUtil.isTokenValid(token)) {
-                String email = jwtUtil.getEmailFromToken(token);
 
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(email, null, List.of());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                try {
+                    Claims claims = jwtUtil.parseToken(token);
+                    Long id = ((Number) claims.get("userId")).longValue();
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+
+
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(new AuthenticatedUser(id, claims.getSubject()), null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                } catch (Exception _) {}
+
             }
         }
 

@@ -6,7 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "cross_references")
+@Table(name = "cross_references",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uq_user_reference",
+                columnNames = {"created_by", "from_book", "from_chapter", "from_verse",
+                        "to_book", "to_chapter", "to_verse_start", "to_verse_end"})
+)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -42,5 +47,7 @@ public class CrossReference {
 
     @Column(name = "votes")
     private Integer votes;
+
+    @Column(name = "created_by") private Long createdBy;
 
 }

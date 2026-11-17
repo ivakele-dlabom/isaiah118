@@ -2,11 +2,14 @@ package com.takemybible.backend.controller.cross_reference;
 
 import com.takemybible.backend.dto.CrossReferenceDto;
 import com.takemybible.backend.dto.NewCrossReferenceInputDto;
+import com.takemybible.backend.security.AuthenticatedUser;
 import com.takemybible.backend.service.CrossReferenceService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import com.takemybible.backend.entity.CrossReference;
@@ -19,45 +22,26 @@ import java.util.List;
 public class CrossReferenceController {
 
     
-    private final CrossReferenceRepository crossReferenceRepository;
     private final CrossReferenceService crossReferenceService;
     private final Logger logger =  LoggerFactory.getLogger(CrossReferenceController.class);
-    public CrossReferenceController(CrossReferenceRepository crossReferenceRepository,  CrossReferenceService crossReferenceService) {
-        this.crossReferenceRepository = crossReferenceRepository;
+    public CrossReferenceController(  CrossReferenceService crossReferenceService) {
         this.crossReferenceService = crossReferenceService;
     }
 
     @PostMapping("/new")
-    public ResponseEntity<CrossReference> newCrossReference(@RequestBody NewCrossReferenceInputDto newCrossReferenceInputDto) {
+    public ResponseEntity<CrossReference> newCrossReference(@Valid @RequestBody NewCrossReferenceInputDto newCrossReferenceInputDto, @AuthenticationPrincipal AuthenticatedUser user) {
         logger.debug("Creating a new cross reference");
-        return ResponseEntity.status(HttpStatus.CREATED).body(crossReferenceService.create(newCrossReferenceInputDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(crossReferenceService.create(newCrossReferenceInputDto, user.id()));
     }
 
     @GetMapping("/{bookName}/{chapterNumber}/{verse}")
     public ResponseEntity<List<CrossReferenceDto>> getCrossReferences(
-            @RequestParam(value = "userId", defaultValue = "-1") Long userId,
             @PathVariable String bookName,
             @PathVariable Integer chapterNumber,
-            @PathVariable Integer verse
+            @PathVariable Integer verse,
+            @AuthenticationPrincipal AuthenticatedUser user
     ) {
+        return crossReferenceService.getCrossReferences(bookName, chapterNumber, verse, user.id());
 
-        if (userId == -1) {
-            // cross-references without userVotes
-            List<CrossReference> crossReferences = crossReferenceRepository.findByFromBookAndFromChapterAndFromVerse(bookName, chapterNumber, verse);
-            return ResponseEntity.ok(crossReferences.stream().map((crossReference -> new CrossReferenceDto(crossReference.getId(),
-                    crossReference.getFromBook(),
-                    crossReference.getFromChapter(),
-                    crossReference.getFromVerse(),
-                    crossReference.getToBook(),
-                    crossReference.getToChapter(),
-                    crossReference.getToVerseStart(),
-                    crossReference.getToVerseEnd(),
-                    crossReference.getVotes(),
-                    0
-            ))).toList());
-        }
-        List<CrossReferenceDto> crossReferenceDto = crossReferenceRepository.findWithUserVote(bookName, chapterNumber, verse, String.valueOf(userId));
-
-        return  ResponseEntity.ok(crossReferenceDto);
     }
 }
