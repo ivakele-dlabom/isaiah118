@@ -1,18 +1,20 @@
 import CrossReferences from "../references/CrossReferences";
+import {useState} from "react";
+import Comments from "@/components/main/comments/Comments.tsx";
 
 interface Props {
 }
 export const VerseFeed = ({}: Props) => {
+    const [selectedFeed, setSelectedFeed] = useState<"comments" | "cross-references">("cross-references");
     return (
         <section className="w-140 bg-white ">
             <div className={"flex flex-row items-center mx-auto w-fit"}>
-                <button className={"hover:cursor-pointer font-medium p-2"}>Comments</button>
+                <button onClick={() => setSelectedFeed("comments")} className={`hover:cursor-pointer font-bold p-2 font-geist-mono ${selectedFeed !== "comments" ? "text-gray-300": ""}`}>Comments</button>
                 <div className="w-px h-4 bg-gray-300 mx-4"></div>
-                <button className={"hover:cursor-pointer font-medium p-2"}>Cross references</button>
+                <button onClick={() => setSelectedFeed("cross-references")} className={`hover:cursor-pointer  p-2 font-geist-mono font-bold ${selectedFeed !== "cross-references"? "text-gray-500" : ""}`}>Cross references</button>
             </div>
             <div className="w-full h-px bg-gray-300 my-4"></div>
-            {/*<Comments/>*/}
-            <CrossReferences/>
+            { selectedFeed === "cross-references" ? <CrossReferences /> : <Comments/> }
 
 
         </section>

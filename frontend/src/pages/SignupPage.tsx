@@ -19,6 +19,7 @@ import {
   FieldLabel,
   FieldError,
 } from "@/components/ui/field";
+import MainBg from "@/assets/bg-main.svg";
 
 const signupSchema = z.object({
   username: z.string().min(2, "Username must be at least 2 characters"),
@@ -32,6 +33,7 @@ export default function SignupPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
+  console.log(MainBg)
 
   const {
     register,
@@ -70,7 +72,13 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
+    <div className="flex min-h-screen w-screen items-center justify-center bg-cover bg-bottom bg-no-repeat p-4"
+
+         style={{
+           backgroundImage: `url(${MainBg})`,
+         }}
+    >
+      <img src={MainBg} className={"absolute w-full h-full"}/>
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Create an account</CardTitle>

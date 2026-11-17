@@ -3,6 +3,8 @@ package com.takemybible.backend.controller.cross_reference;
 import com.takemybible.backend.dto.CrossReferenceDto;
 import com.takemybible.backend.dto.NewCrossReferenceInputDto;
 import com.takemybible.backend.service.CrossReferenceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,7 @@ public class CrossReferenceController {
     
     private final CrossReferenceRepository crossReferenceRepository;
     private final CrossReferenceService crossReferenceService;
+    private final Logger logger =  LoggerFactory.getLogger(CrossReferenceController.class);
     public CrossReferenceController(CrossReferenceRepository crossReferenceRepository,  CrossReferenceService crossReferenceService) {
         this.crossReferenceRepository = crossReferenceRepository;
         this.crossReferenceService = crossReferenceService;
@@ -26,6 +29,7 @@ public class CrossReferenceController {
 
     @PostMapping("/new")
     public ResponseEntity<CrossReference> newCrossReference(@RequestBody NewCrossReferenceInputDto newCrossReferenceInputDto) {
+        logger.debug("Creating a new cross reference");
         return ResponseEntity.status(HttpStatus.CREATED).body(crossReferenceService.create(newCrossReferenceInputDto));
     }
 

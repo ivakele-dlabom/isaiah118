@@ -5,7 +5,7 @@ import { BACKEND_BASE_URL } from "@/lib/constants.ts";
 import { useBookNavigation } from "@/contexts/BookContext.tsx";
 import {useAuth} from "@/contexts/AuthContext.tsx";
 import {useNavigate} from "react-router-dom";
-import {toast} from "@/components/ui/toast"
+import {toast} from "@/components/ui/toast.tsx"
 import {toRoman} from "@/lib/utils.ts";
 
 interface CrossReferenceCardProps {
@@ -95,16 +95,19 @@ export default function CrossReferenceCard({
         translation,
     ]);
 
-    useEffect(() => {
-        if (!user) navigate("/login");
-    }, [user, navigate]);
-
-    if (!user) {
-        navigate("/login");
-        return ;
-    }
-
     const handleVote = async (direction: 1 | -1) => {
+        if (user === null) {
+            toast.add({
+                title: "Sign in to vote",
+                description: "Please log in to vote on cross references.",
+                type: "info",
+                actionProps: {
+                    children: "Log in",
+                    onClick: () => navigate("/login"),
+                },
+            });
+            return;
+        }
         const prevVote = referenceVote;
         const prevVotes = numberOfVotes;
 

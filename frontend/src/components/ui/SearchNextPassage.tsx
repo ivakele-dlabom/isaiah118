@@ -102,6 +102,7 @@ export const SearchNextPassage = ({
         if (e.key === "Enter" && suggestions[activeIndex]) {
             e.preventDefault();
             selectSuggestion(suggestions[activeIndex].value);
+            setIsOpen(false);
         }
     };
 
@@ -151,8 +152,10 @@ export const SearchNextPassage = ({
                                 aria-selected={activeIndex === index}
                                 onMouseDown={e => e.preventDefault()}
                                 onMouseEnter={() => setActiveIndex(index)}
-                                onClick={() =>
-                                    selectSuggestion(suggestion.value)
+                                onClick={() => {
+                                    selectSuggestion(suggestion.value);
+                                    setIsOpen(false);
+                                }
                                 }
                                 className={`w-full px-3 py-2 text-left text-sm transition-colors ${
                                     activeIndex === index

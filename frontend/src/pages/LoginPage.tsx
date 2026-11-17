@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import MainBg from "@/assets/bg-main.svg";
 import {
   Card,
   CardHeader,
@@ -74,8 +75,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div
+      className="flex min-h-screen w-screen items-center justify-center bg-cover bg-bottom bg-no-repeat p-4"
+      style={{ backgroundImage: `url(${MainBg})` }}
+    >
+      <Card className="">
         <CardHeader>
           <CardTitle>Welcome back</CardTitle>
           <CardDescription>

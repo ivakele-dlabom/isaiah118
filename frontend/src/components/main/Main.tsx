@@ -1,7 +1,5 @@
 import { BookDisplay } from "./BookDisplay.tsx";
 import { useBookNavigation } from "@/contexts/BookContext.tsx";
-import {useAuth} from "@/contexts/AuthContext.tsx";
-import {useNavigate} from "react-router-dom";
 import {Profile} from "@/components/Profile.tsx";
 
 
@@ -9,12 +7,6 @@ import {Profile} from "@/components/Profile.tsx";
 const Main = () => {
   const { translation, setTranslation } = useBookNavigation();
   const availableTranslation = ["KJV"];
-  const navigate = useNavigate();
-  const {user} = useAuth();
-  if (!user) {
-      navigate("/login")
-      return
-  }
 
   return (
     <section className="font-firacode grid grid-cols-1 gap-4  min-h-screen px-6">

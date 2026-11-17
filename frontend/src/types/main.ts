@@ -12,6 +12,11 @@ export interface CrossReferenceVote {
   value: number;
 }
 
+export interface AuthUser {
+  userId: number;
+  email: string;
+  username: string;
+}
 export interface Citation {
     bookNumber: number;
     chapterNumber: number;

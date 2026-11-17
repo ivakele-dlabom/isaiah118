@@ -150,6 +150,7 @@ export default function AddCrossReferenceModal({
 
             if (response.ok) {
                 toast.add({ type: "success", description: "Cross reference created"})
+                setVerseVerified(false)
                 await refetchCrossReferences();
             }
         } catch (error) {
@@ -165,7 +166,7 @@ export default function AddCrossReferenceModal({
         setTarget("");
         setPreview(null);
         setConnectionType(CONNECTION_TYPES[0]);
-        setStrength("Strong");
+        setStrength("STRONG");
         setTags([]);
         setTagOptions(availableTags);
         setAddingTag(false);
@@ -338,7 +339,7 @@ export default function AddCrossReferenceModal({
                             )}
                         </div>
 
-                        {preview && (
+                        { preview  && (
                             <div className="p-3.5 rounded-xl border border-stone-200 bg-stone-50/70 space-y-1.5">
                                 <div className="flex items-center justify-between text-xs">
                                     <span className="font-serif font-bold text-blue-700">{preview.caption}</span>

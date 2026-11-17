@@ -13,12 +13,14 @@ import {toast} from "@/components/ui/toast.tsx"
 import AddCrossReferenceModal, {type SourceVerse} from "@/components/main/references/AddCrossReferenceModal.tsx";
 import {useModal} from "@/contexts/ModalContext.tsx";
 import {useVerses} from "@/hooks/useVerse.ts";
+import {useAuth} from "@/contexts/AuthContext.tsx";
 
 export default function CrossReferences() {
     const navigate = useNavigate();
     const {selectedVerseNumber, setSelectedVerseNumber, setSelectedVerseId} = useVerseSelection();
     const {crossReferences, fetchCrossReferences} = useCrossReferences(selectedVerseNumber);
     const { books, translation} = useBookNavigation();
+    const {user} = useAuth();
     const {crossReferenceModalOpen, setCrossReferenceModalOpen} = useModal();
     const { bookNumber, chapterNumber } = useParams<{ bookNumber: string; chapterNumber: string; verseNumber: string }>();
     const [sortValue, setSortValue] = useState("")
@@ -59,6 +61,19 @@ export default function CrossReferences() {
     useEffect(() => () => window.clearTimeout(timer.current), []);
 
     function handleAddReference() {
+        if (user === null) {
+
+            toast.add({
+                title: "Sign in to vote",
+                description: "Please log in to vote on cross references.",
+                type: "info",
+                actionProps: {
+                    children: "Log in",
+                    onClick: () => navigate("/login"),
+                },
+            });
+            return;
+        }
         setCrossReferenceModalOpen(true);
     }
 

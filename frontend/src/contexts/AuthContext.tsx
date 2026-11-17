@@ -1,10 +1,6 @@
 import { createContext, useContext, useState } from "react";
+import type {AuthUser} from "@/types/main.ts";
 
-interface AuthUser {
-  userId: number;
-  email: string;
-  username: string;
-}
 
 interface AuthContextType {
   token: string | null;

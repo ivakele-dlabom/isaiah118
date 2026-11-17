@@ -1,5 +1,8 @@
 package com.takemybible.backend.service;
 
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.takemybible.backend.dto.NewCrossReferenceInputDto;
 import com.takemybible.backend.entity.CrossReference;
 import com.takemybible.backend.entity.CrossReferenceExtras;
@@ -14,6 +17,7 @@ import java.util.Optional;
 public class CrossReferenceService {
     private final CrossReferenceRepository crossReferenceRepository;
     private final CrossReferenceExtrasRepository crossReferenceExtrasRepository;
+    private static final Logger log = LoggerFactory.getLogger(CrossReferenceService.class);
 
     public CrossReferenceService (CrossReferenceRepository crossReferenceRepository, CrossReferenceExtrasRepository crossReferenceExtrasRepository) {
         this.crossReferenceRepository = crossReferenceRepository;
@@ -30,6 +34,7 @@ public class CrossReferenceService {
     }
 
     public CrossReference create(NewCrossReferenceInputDto newCrossReferenceInputDto) {
+        log.debug("Creating a new cross reference");
 
         // saving the reference
         CrossReference crossReference = getCrossReference(newCrossReferenceInputDto);
