@@ -41,7 +41,7 @@ public class CrossReferenceController {
             @PathVariable Integer verse,
             @AuthenticationPrincipal AuthenticatedUser user
     ) {
-        return crossReferenceService.getCrossReferences(bookName, chapterNumber, verse, user.id());
+        return crossReferenceService.getCrossReferences(bookName, chapterNumber, verse, user == null? null: user.id());
 
     }
 }

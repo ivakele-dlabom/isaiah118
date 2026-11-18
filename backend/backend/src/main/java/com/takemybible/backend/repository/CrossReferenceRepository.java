@@ -35,7 +35,7 @@ public interface CrossReferenceRepository extends JpaRepository<CrossReference, 
             @Param("book") String book,
             @Param("chapter") Integer chapter,
             @Param("verse") Integer verse,
-            @Param("userId") String userId);   // null for anonymous → no join match → userVote 0
+            @Param("userId") Long userId);   // null for anonymous → no join match → userVote 0
 
 
 

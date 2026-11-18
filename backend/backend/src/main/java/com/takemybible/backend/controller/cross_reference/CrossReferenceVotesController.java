@@ -23,11 +23,9 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/cross-reference/vote")
 public class CrossReferenceVotesController {
 
-    private final CrossReferenceVotesRepository crossReferenceVotesRepository;
     private final CrossReferenceService crossReferenceService;
 
     public CrossReferenceVotesController(CrossReferenceVotesRepository crossReferenceVotesRepository, CrossReferenceService crossReferenceService) {
-        this.crossReferenceVotesRepository = crossReferenceVotesRepository;
         this.crossReferenceService = crossReferenceService;
     }
 

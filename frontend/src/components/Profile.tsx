@@ -17,9 +17,9 @@ const circle =
     "absolute top-4 right-4 flex size-10 items-center justify-center rounded-full bg-black text-white";
 
 export const Profile = () => {
-    const { user } = useAuth();
+    const { user, isAuthenticated } = useAuth();
 
-    if (!user) {
+    if (!isAuthenticated || !user) {
         return (
             <Link to="/login" aria-label="Sign in" className={circle}>
                 <LogIn className="size-4" />

@@ -6,7 +6,7 @@ import { useBookNavigation } from "@/contexts/BookContext.tsx";
 import {useAuth} from "@/contexts/AuthContext.tsx";
 import {useNavigate} from "react-router-dom";
 import {toast} from "@/components/ui/toast.tsx"
-import {toRoman} from "@/lib/utils.ts";
+import {fetchData, toRoman} from "@/lib/utils.ts";
 
 interface CrossReferenceCardProps {
     reference: CrossReference;
@@ -34,7 +34,7 @@ export default function CrossReferenceCard({
     const [votingLoading, setVotingLoading] = useState(false);
     const [referenceVote, setReferenceVote] = useState<0 | -1 | 1>(reference.userVote);
     const [numberOfVotes, setNumberOfVotes] = useState(reference.votes);
-    const {user} = useAuth();
+    const {user, isAuthenticated} = useAuth();
     const {translation, books} = useBookNavigation();
     const navigate = useNavigate();
 
@@ -64,6 +64,7 @@ export default function CrossReferenceCard({
 
         const controller = new AbortController();
 
+        // Get the verses connected to the reference
         async function getVerses() {
             try {
                 const url = `${BACKEND_BASE_URL}api/${translation.toLowerCase()}/verses/${bookId}/${reference.toChapter}/${reference.toVerseStart}/${reference.toVerseEnd}`;
@@ -96,7 +97,7 @@ export default function CrossReferenceCard({
     ]);
 
     const handleVote = async (direction: 1 | -1) => {
-        if (user === null) {
+        if (!isAuthenticated || user === null) {
             toast.add({
                 title: "Sign in to vote",
                 description: "Please log in to vote on cross references.",
@@ -119,10 +120,7 @@ export default function CrossReferenceCard({
         setVotingLoading(true);
 
         try {
-            const response = await fetch(
-                `${BACKEND_BASE_URL}api/cross-reference/vote/${reference.id}/${user.userId}/${direction}`,
-                { method: "POST" }
-            );
+            const response = await fetchData(`${BACKEND_BASE_URL}api/cross-reference/vote/${reference.id}/${direction}`, "POST");
             if (!response.ok) {
                 setReferenceVote(prevVote);
                 setNumberOfVotes(prevVotes);

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,16 +28,31 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
+interface RedirectState {
+  from?: { pathname?: string; search?: string; hash?: string };
+}
+
+/** Where to go once logged in: the page the route guard sent us away from, else home. */
+function getPostLoginPath(state: unknown): string {
+  const from = (state as RedirectState | null)?.from;
+  const pathname = from?.pathname;
+  if (
+    !pathname ||
+    !pathname.startsWith("/") ||
+    pathname.startsWith("//") || // "//host" would be read as another origin
+    pathname === "/login" ||
+    pathname === "/signup"
+  ) {
+    return "/";
+  }
+  return `${pathname}${from?.search ?? ""}${from?.hash ?? ""}`;
+}
+
 export default function LoginPage() {
-  const { login, user } = useAuth();
-  const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
+  const location = useLocation();
   const [serverError, setServerError] = useState<string | null>(null);
 
-  if (user) {
-    navigate("/");
-    return
-
-  }
   const {
     register,
     handleSubmit,
@@ -68,11 +83,16 @@ export default function LoginPage() {
         email: result.email,
         username: result.username,
       });
-      navigate("/");
+      // No navigate() here: login() flips isAuthenticated and the redirect below takes over.
     } catch {
       setServerError("Network error. Please try again.");
     }
   };
+
+  // All hooks are above this line. Redirect with <Navigate>, never navigate() during render.
+  if (isAuthenticated) {
+    return <Navigate to={getPostLoginPath(location.state)} replace />;
+  }
 
   return (
     <div

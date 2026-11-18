@@ -1,8 +1,8 @@
 import './App.css'
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Main from "./components/main/Main.tsx";
 import { BookNavigationProvider } from "./contexts/BookContext.tsx";
-import { AuthProvider } from "./contexts/AuthContext.tsx";
+import {AuthProvider, useAuth} from "./contexts/AuthContext.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import SignupPage from "./pages/SignupPage.tsx";
 import {VerseSelectionProvider} from "@/contexts/VerseSelectionContext.tsx";
@@ -12,7 +12,10 @@ import {Toaster} from "@/components/ui/toast.tsx";
 
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+    const {isAuthenticated} = useAuth();
+    // The router's location, not window.location: a window.Location can't be stored in history state.
+    const location = useLocation();
+  return <>{isAuthenticated?children: <Navigate to="/login" state={{ from: location }} replace />}</>;
 }
 
 function AppRoutes() {

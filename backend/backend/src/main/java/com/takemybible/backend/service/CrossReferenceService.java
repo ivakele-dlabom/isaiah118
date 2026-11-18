@@ -52,7 +52,6 @@ public class CrossReferenceService {
      * User can only have one reference per verse range
      * If they are the same then override the previous one
      */
-
     @Transactional
     public CrossReference create(NewCrossReferenceInputDto dto, Long userId) {
         log.debug("Creating or updating a cross reference");
@@ -145,22 +144,22 @@ public class CrossReferenceService {
 
     public ResponseEntity<List<CrossReferenceDto>> getCrossReferences(String bookName, Integer chapterNumber, Integer verse, Long userId) {
 
-        if (userId == -1) {
-            // cross-references without userVotes
-            List<CrossReference> crossReferences = crossReferenceRepository.findByFromBookAndFromChapterAndFromVerse(bookName, chapterNumber, verse);
-            return ResponseEntity.ok(crossReferences.stream().map((crossReference -> new CrossReferenceDto(crossReference.getId(),
-                    crossReference.getFromBook(),
-                    crossReference.getFromChapter(),
-                    crossReference.getFromVerse(),
-                    crossReference.getToBook(),
-                    crossReference.getToChapter(),
-                    crossReference.getToVerseStart(),
-                    crossReference.getToVerseEnd(),
-                    crossReference.getVotes(),
-                    0
-            ))).toList());
-        }
-        List<CrossReferenceDto> crossReferenceDto = crossReferenceRepository.findWithUserVote(bookName, chapterNumber, verse, String.valueOf(userId));
+//        if (userId == null) {
+//            // cross-references without userVotes
+//            List<CrossReference> crossReferences = crossReferenceRepository.findByFromBookAndFromChapterAndFromVerse(bookName, chapterNumber, verse);
+//            return ResponseEntity.ok(crossReferences.stream().map((crossReference -> new CrossReferenceDto(crossReference.getId(),
+//                    crossReference.getFromBook(),
+//                    crossReference.getFromChapter(),
+//                    crossReference.getFromVerse(),
+//                    crossReference.getToBook(),
+//                    crossReference.getToChapter(),
+//                    crossReference.getToVerseStart(),
+//                    crossReference.getToVerseEnd(),
+//                    crossReference.getVotes(),
+//                    0
+//            ))).toList());
+//        }
+        List<CrossReferenceDto> crossReferenceDto = crossReferenceRepository.findWithUserVote(bookName, chapterNumber, verse, userId);
 
         return  ResponseEntity.ok(crossReferenceDto);
     }

@@ -1,7 +1,8 @@
 import type { Book } from "@/types/main";
+import {fetchData} from "@/lib/utils.ts";
 
 export async function fetchBooks(translation: string): Promise<Book[]> {
-  const res = await fetch(`http://localhost:9090/api/${translation.toLowerCase()}/books`, { method: "GET" });
+  const res = await fetchData(`http://localhost:9090/api/${translation.toLowerCase()}/books`, "GET");
 
   if (res.ok) {
 

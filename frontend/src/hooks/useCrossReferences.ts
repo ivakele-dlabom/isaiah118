@@ -8,7 +8,9 @@ import { useParams } from "react-router-dom";
 
 export function useCrossReferences(verse: number) {
   const { translation, books } = useBookNavigation();
-  const {user}= useAuth();
+  const { user, isAuthenticated } = useAuth();
+  // Part of the cache key: a list fetched anonymously must not be reused after login (or vice versa).
+  const viewer = isAuthenticated && user ? user.userId : "anon";
 const { bookNumber, chapterNumber } = useParams<{ bookNumber: string; chapterNumber: string }>();
   const bN: number = Number(bookNumber);
   const cN: number = Number(chapterNumber);
@@ -24,8 +26,8 @@ const { bookNumber, chapterNumber } = useParams<{ bookNumber: string; chapterNum
     error,
     refetch,
   } = useQuery<CrossReference[]>({
-    queryKey: crossReferenceKeys.byVerse(translation, bookName, cN, verse),
-    queryFn: () => fetchCrossReferences(translation, bookName, cN, verse, user?.userId),
+    queryKey: crossReferenceKeys.byVerse(translation, bookName, cN, verse, viewer),
+    queryFn: () => fetchCrossReferences(translation, bookName, cN, verse),
     // Only fire once we actually have a book name and a valid verse.
     // The query re-runs automatically whenever the queryKey changes
     // (i.e. when the selected verse/chapter/book changes).

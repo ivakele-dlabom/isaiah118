@@ -18,13 +18,16 @@ export const crossReferenceKeys = {
       [...crossReferenceKeys.byTranslation(translation), bookName] as const,
   byChapter: (translation: string, bookName: string, chapterNumber: number) =>
       [...crossReferenceKeys.byBook(translation, bookName), chapterNumber] as const,
+  // The result depends on who is asking (each item carries that user's `userVote`),
+  // so the viewer is part of the key. Use "anon" when logged out.
   byVerse: (
       translation: string,
       booKName: string,
       chapterNumber: number,
-      verse: number
+      verse: number,
+      viewer: number | "anon"
   ) =>
-      [...crossReferenceKeys.byChapter(translation, booKName, chapterNumber), verse] as const,
+      [...crossReferenceKeys.byChapter(translation, booKName, chapterNumber), verse, viewer] as const,
 };
 
 

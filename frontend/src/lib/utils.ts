@@ -15,11 +15,19 @@ export async function fetchData(
     method: HttpMethod = "GET",
     body?: unknown
 ): Promise<Response> {
-    return await fetch(url, {
-      method,
-      headers: body !== undefined ? {"Content-Type": "application/json"} : undefined,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
+    const token = localStorage.getItem("token");
+    const res = await fetch(url, {
+        method,
+        headers: {
+            ...(body !== undefined && { "Content-Type": "application/json" }),
+            ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+    if (res.status === 401 && token) {
+        window.dispatchEvent(new Event("auth:expired")); // token was sent but rejected
+    }
+    return res;
 }
 
 const ROMAN_MAP: [number, string][] = [
@@ -305,4 +313,24 @@ export function getBibleSuggestions(
             value: `${book!.name} ${chapter}:${v}`,
             type: "VERSE" as const,
         }));
+}
+
+
+export async function getErrorMessage(response: Response): Promise<string> {
+    if (response.status === 401) return "Please log in again";
+
+    try {
+        const data = await response.json();
+
+        // Spring's default error body or ResponseStatusException
+        if (typeof data.message === "string" && data.message) return data.message;
+
+        // Validation map from your @RestControllerAdvice: { fromBook: "must not be blank", ... }
+        const values = Object.values(data).filter((v) => typeof v === "string");
+        if (values.length > 0) return values.join(", ");
+    } catch {
+        // body wasn't JSON (or was empty)
+    }
+
+    return `Something went wrong (${response.status})`;
 }

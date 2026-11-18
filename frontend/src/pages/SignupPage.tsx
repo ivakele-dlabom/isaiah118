@@ -78,7 +78,7 @@ export default function SignupPage() {
            backgroundImage: `url(${MainBg})`,
          }}
     >
-      <img src={MainBg} className={"absolute w-full h-full"}/>
+      {/*<img src={MainBg} className={"absolute w-full h-full"}/>*/}
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Create an account</CardTitle>

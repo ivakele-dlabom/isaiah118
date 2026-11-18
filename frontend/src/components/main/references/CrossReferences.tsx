@@ -20,7 +20,7 @@ export default function CrossReferences() {
     const {selectedVerseNumber, setSelectedVerseNumber, setSelectedVerseId} = useVerseSelection();
     const {crossReferences, fetchCrossReferences} = useCrossReferences(selectedVerseNumber);
     const { books, translation} = useBookNavigation();
-    const {user} = useAuth();
+    const {isAuthenticated} = useAuth();
     const {crossReferenceModalOpen, setCrossReferenceModalOpen} = useModal();
     const { bookNumber, chapterNumber } = useParams<{ bookNumber: string; chapterNumber: string; verseNumber: string }>();
     const [sortValue, setSortValue] = useState("")
@@ -61,11 +61,11 @@ export default function CrossReferences() {
     useEffect(() => () => window.clearTimeout(timer.current), []);
 
     function handleAddReference() {
-        if (user === null) {
+        if (!isAuthenticated) {
 
             toast.add({
                 title: "Sign in to vote",
-                description: "Please log in to vote on cross references.",
+                description: "Log in to add a new cross references.",
                 type: "info",
                 actionProps: {
                     children: "Log in",

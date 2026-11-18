@@ -3,7 +3,7 @@ import {useModal} from "@/contexts/ModalContext.tsx";
 import {SearchNextPassage} from "@/components/ui/SearchNextPassage.tsx";
 import {toast} from "@/components/ui/toast.tsx";
 import type {CrossReference} from "@/types/main.ts";
-import {fetchData} from "@/lib/utils.ts";
+import {fetchData, getErrorMessage} from "@/lib/utils.ts";
 import {BACKEND_BASE_URL} from "@/lib/constants.ts";
 import type {QueryObserverResult, RefetchOptions} from "@tanstack/react-query";
 
@@ -152,10 +152,17 @@ export default function AddCrossReferenceModal({
                 toast.add({ type: "success", description: "Cross reference created"})
                 setVerseVerified(false)
                 await refetchCrossReferences();
+                return true;
+            } else {
+
+                const message = await getErrorMessage(response);
+                toast.add({ type: "error", description: message });
+                return false;
             }
         } catch (error) {
 
             toast.add({type: "error", description: "Failed to create the cross reference" });
+            return false;
         }
 
     }
@@ -203,14 +210,14 @@ export default function AddCrossReferenceModal({
         setSubmitting(true);
 
         try {
-            await onSubmit({
+            const canClose = await onSubmit({
                 target: target.trim(),
                 connectionType,
                 strength,
                 tags,
                 note: note.trim(),
             });
-            onClose();
+            if (canClose) onClose();
         } finally {
             setSubmitting(false);
         }
