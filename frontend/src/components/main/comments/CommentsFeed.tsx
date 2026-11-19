@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import WriteCommentField from "./WriteCommentField.tsx";
+import { BACKEND_BASE_URL } from "@/lib/constants.ts";
 
 interface CommentData {
     id: number;
@@ -24,7 +25,7 @@ export default function CommentsFeed({ className, verseId }: Props) {
         setLoading(true);
         try {
             const response = await fetch(
-                `http://localhost:9090/api/comments/verse/${verseId}`
+                `${BACKEND_BASE_URL}api/comments/verse/${verseId}`
             );
             if (response.ok) {
                 const data = await response.json();

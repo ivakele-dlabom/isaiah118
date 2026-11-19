@@ -1,0 +1,194 @@
+# =============================================================================
+# docker-compose.yml: runs the WHOLE app on one server
+# -----------------------------------------------------------------------------
+# Docker Compose reads this file and creates/starts several containers together
+# (a "stack"), wired up on private networks.
+#
+#                 internet
+#                    |
+#               port 80 (only published port)
+#                    |
+#            +-------v-------+
+#            |  web (nginx)  |  serves the React site, forwards /api/ to backend
+#            +-------+-------+
+#                    |   network "web-net"
+#            +-------v-------+
+#            |    backend    |  Spring Boot API (not reachable from outside)
+#            +-------+-------+
+#                    |   network "db-net"
+#            +-------v-------+
+#            |  db (MySQL)   |  data lives in the "db-data" volume
+#            +---------------+
+#
+# Only nginx is exposed. The backend and the database have NO published ports,
+# so nobody on the internet can talk to them directly.
+#
+# FIRST-TIME SETUP (details in DOCKER.md):
+#   1. copy .env.example to .env and fill in the passwords and JWT_SECRET
+#   2. (recommended) put the Bible data in database/seed/ (see its README.md)
+#   3. docker compose up -d --build
+#   4. open http://localhost
+#
+# DAILY COMMANDS:
+#   docker compose up -d --build   build images if needed and start everything
+#   docker compose ps              show what is running and healthy
+#   docker compose logs -f backend follow one service's logs (Ctrl+C to stop)
+#   docker compose down            stop and remove containers (data is KEPT)
+#   docker compose down -v         ALSO delete the database volume (DATA LOST)
+# =============================================================================
+
+# Project name. Used as a prefix for the containers, networks and volumes
+# Compose creates (for example "takemybible_db-data").
+name: takemybible
+
+# A reusable snippet. "&default-logging" names it; "*default-logging" below
+# pastes it in. By default Docker keeps container logs forever, which can slowly
+# fill a server's disk. This keeps at most 3 files of 10 MB per container.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # DATABASE
+  # ---------------------------------------------------------------------------
+  db:
+    # MySQL 8.4 is the current long-term-support release. (8.0 reached end of
+    # life in April 2026.) Dumps made with MySQL 8.0 load fine into 8.4.
+    image: mysql:8.4
+
+    # Start again automatically after a crash or a server reboot, unless you
+    # stopped it yourself with "docker compose stop".
+    restart: unless-stopped
+
+    # The mysql image reads these on its FIRST start (when the data volume is
+    # empty) to create the database and an app user that owns it.
+    # "${NAME:-default}" = use the value from .env, or the default after ":-".
+    # "${NAME:?message}" = stop with that message if the value is missing, so a
+    # forgotten password fails loudly instead of silently using an empty one.
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-takemybible}
+      MYSQL_USER: ${MYSQL_USER:-takemybible}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+
+    volumes:
+      # NAMED VOLUME: storage managed by Docker that survives container
+      # deletion. Without it, all data would vanish whenever the container is
+      # recreated.
+      - db-data:/var/lib/mysql
+      # BIND MOUNT: a folder from this project. On the very first start (empty
+      # data volume only), the image runs every *.sql / *.sql.gz file in
+      # /docker-entrypoint-initdb.d in alphabetical order. This is how the Bible
+      # text and cross references get loaded. ":ro" = read-only for the container.
+      - ./database/seed:/docker-entrypoint-initdb.d:ro
+
+    # Compose asks Docker to run this command regularly. "depends_on" in the
+    # backend waits until it succeeds.
+    #  - "-h 127.0.0.1" forces a TCP connection. While the image is running the
+    #    seed scripts it runs a temporary server that has NO network, only a
+    #    socket. A socket-based check would say "healthy" too early and the
+    #    backend would fail to connect.
+    #  - "$$" is how you write a literal "$" in compose files. The container's
+    #    shell then expands it.
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$$MYSQL_ROOT_PASSWORD\" mysqladmin ping -h 127.0.0.1 -uroot --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 30        # up to ~5 minutes: loading a large seed takes a while
+      start_period: 30s
+
+    networks:
+      - db-net
+    logging: *default-logging
+
+  # ---------------------------------------------------------------------------
+  # BACKEND (Spring Boot API)
+  # ---------------------------------------------------------------------------
+  backend:
+    # Build the image from backend/backend/Dockerfile.
+    build:
+      context: ./backend/backend
+    image: takemybible-backend
+    restart: unless-stopped
+
+    # Wait until the database reports healthy before starting. If it is still
+    # not reachable, the app exits and "restart" tries again.
+    depends_on:
+      db:
+        condition: service_healthy
+
+    # Configuration as environment variables. application.properties reads these
+    # names: ${SERVER_PORT}, ${DB_URL}, ... No secret is baked into the image.
+    environment:
+      # Port inside the container. nginx.conf forwards to this port.
+      SERVER_PORT: "8080"
+      # "db" is the database service's name above. On a compose network, service
+      # names work as hostnames. ("localhost" would be the backend itself.)
+      DB_URL: "jdbc:mysql://db:3306/${MYSQL_DATABASE:-takemybible}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+      DB_USERNAME: ${MYSQL_USER:-takemybible}
+      DB_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+      # Key that signs login tokens. Anyone who knows it can forge a login for
+      # any user, so it must be long, random and secret.
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+      # Browsers send requests to nginx on the same address as the page, so CORS
+      # is not actually used. The app requires a value, so give it the site URL.
+      CORS_ORIGINS: ${SITE_URL:-http://localhost}
+
+    # Cap the container's memory. This also gives the JVM flag
+    # -XX:MaxRAMPercentage=60 (in the Dockerfile) a real base to work from.
+    mem_limit: ${BACKEND_MEM_LIMIT:-768m}
+
+    # No "ports:" on purpose: the API is reachable only through nginx.
+    # (It is on both networks: web-net so nginx can reach it, db-net so it can
+    # reach MySQL.) There is no healthcheck because the slim Java image has no
+    # curl; add Spring Boot Actuator later if you want one.
+    networks:
+      - web-net
+      - db-net
+    logging: *default-logging
+
+  # ---------------------------------------------------------------------------
+  # WEB (nginx: React site + reverse proxy)
+  # ---------------------------------------------------------------------------
+  web:
+    build:
+      context: ./frontend
+    image: takemybible-web
+    restart: unless-stopped
+
+    # Start after the backend container exists. (nginx re-resolves the backend's
+    # address on every request, so it also copes with the backend restarting.)
+    depends_on:
+      - backend
+
+    # "HOST:CONTAINER". This is the ONLY port opened on the server. The host
+    # side defaults to 80; set HTTP_PORT in .env to use another one (for
+    # example 8080 if port 80 is taken). For HTTPS you would also add "443:443"
+    # (see DOCKER.md).
+    ports:
+      - "${HTTP_PORT:-80}:80"
+
+    networks:
+      - web-net
+    logging: *default-logging
+
+# Private virtual networks. Containers on the same network can reach each other
+# by service name; containers on different networks cannot.
+networks:
+  web-net:
+  db-net:
+    # "internal: true" cuts this network off from the internet. The database
+    # never needs outside access, and now it could not call out even if it were
+    # compromised. (Side effect: the DB port cannot be published to the host.
+    # Use "docker compose exec db mysql -uroot -p" to get a SQL shell instead.)
+    internal: true
+
+# Declares the named volume used by the db service. Docker keeps it on the
+# server's disk even if every container is deleted.
+volumes:
+  db-data:

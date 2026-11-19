@@ -1,0 +1,6 @@
+# Docker Compose settings and secrets (copy .env.example to .env). Never commit.
+.env
+
+# JVM crash dumps (these end up in the folder where Java was started)
+hs_err_pid*.log
+replay_pid*.log

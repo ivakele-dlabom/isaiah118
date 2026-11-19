@@ -11,7 +11,9 @@ import {SidebarProvider} from "@/components/ui/sidebar.tsx";
 import {Toaster} from "@/components/ui/toast.tsx";
 
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+// Guard for pages that need a login (e.g. a future /account page). Reading the Bible is public,
+// so nothing uses it yet. Exported so the unused-code check (which fails `npm run build`) allows it.
+export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const {isAuthenticated} = useAuth();
     // The router's location, not window.location: a window.Location can't be stored in history state.
     const location = useLocation();
@@ -21,7 +23,6 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function AppRoutes() {
     const homePage = (
 
-        <ProtectedRoute>
             <SidebarProvider>
                 <ModalProvider>
                     <BookNavigationProvider>
@@ -31,7 +32,6 @@ function AppRoutes() {
                     </BookNavigationProvider>
                 </ModalProvider>
             </SidebarProvider>
-        </ProtectedRoute>
     );
   return (
     <Routes>

@@ -1,5 +1,6 @@
 import type { CrossReference } from "@/types/main";
 import {fetchData} from "@/lib/utils.ts";
+import {BACKEND_BASE_URL} from "@/lib/constants.ts";
 
 export async function fetchCrossReferences(
   translation: string,
@@ -8,7 +9,7 @@ export async function fetchCrossReferences(
   verse: number,
 ): Promise<CrossReference[]> {
   const res = await fetchData(
-    `http://localhost:9090/api/${translation.toLocaleLowerCase()}/cross-references/${bookName}/${chapterNumber}/${verse}`, "GET"
+    `${BACKEND_BASE_URL}api/${translation.toLocaleLowerCase()}/cross-references/${bookName}/${chapterNumber}/${verse}`, "GET"
   );
 
   if (res.ok) {

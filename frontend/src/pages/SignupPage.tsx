@@ -20,6 +20,7 @@ import {
   FieldError,
 } from "@/components/ui/field";
 import MainBg from "@/assets/bg-main.svg";
+import { BACKEND_BASE_URL } from "@/lib/constants.ts";
 
 const signupSchema = z.object({
   username: z.string().min(2, "Username must be at least 2 characters"),
@@ -47,7 +48,7 @@ export default function SignupPage() {
     setServerError(null);
 
     try {
-      const response = await fetch("http://localhost:9090/api/auth/signup", {
+      const response = await fetch(`${BACKEND_BASE_URL}api/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

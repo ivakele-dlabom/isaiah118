@@ -1,0 +1,22 @@
+# Files NOT sent to Docker as the build context (see backend/backend/.dockerignore
+# for the explanation).
+
+# Installed/built inside the image. Sending your local copies would be slow, and
+# node_modules built on Windows can differ from what Linux needs.
+node_modules
+dist
+
+# Local configuration and secrets
+.env
+.env.*
+
+# Editor files, version control, logs
+.idea
+.vscode
+.git
+*.log
+
+# Not needed to build
+README.md
+Dockerfile
+.dockerignore

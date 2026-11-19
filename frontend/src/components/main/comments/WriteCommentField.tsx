@@ -6,6 +6,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { BACKEND_BASE_URL } from "@/lib/constants.ts";
 
 interface Props {
   className?: string;
@@ -32,7 +33,7 @@ export default function WriteCommentField({
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:9090/api/comments", {
+      const response = await fetch(`${BACKEND_BASE_URL}api/comments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

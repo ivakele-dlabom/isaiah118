@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import MainBg from "@/assets/bg-main.svg";
+import { BACKEND_BASE_URL } from "@/lib/constants.ts";
 import {
   Card,
   CardHeader,
@@ -65,7 +66,7 @@ export default function LoginPage() {
     setServerError(null);
 
     try {
-      const response = await fetch("http://localhost:9090/api/auth/login", {
+      const response = await fetch(`${BACKEND_BASE_URL}api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

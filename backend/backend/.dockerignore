@@ -1,0 +1,31 @@
+# .dockerignore lists files that must NOT be sent to Docker as the "build
+# context" (the folder given to `docker build`). Benefits:
+#   - faster builds (less data to send)
+#   - secrets and local junk can never end up in an image by accident
+# The syntax is like .gitignore.
+
+# Build output. The image compiles the code itself, so a stale local copy would
+# only be sent for nothing.
+target/
+
+# SECRETS: your local configuration. The container gets its settings from
+# environment variables instead (see docker-compose.yml).
+.env
+.env.*
+
+# Editor and IDE files
+.idea/
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
+
+# Version control and logs
+.git/
+*.log
+
+# Not needed to build
+HELP.md
+Dockerfile
+.dockerignore
