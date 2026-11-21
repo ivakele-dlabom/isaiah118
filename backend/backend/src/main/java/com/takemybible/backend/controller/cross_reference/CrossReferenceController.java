@@ -31,6 +31,9 @@ public class CrossReferenceController {
     @PostMapping("/new")
     public ResponseEntity<CrossReference> newCrossReference(@Valid @RequestBody NewCrossReferenceInputDto newCrossReferenceInputDto, @AuthenticationPrincipal AuthenticatedUser user) {
         logger.debug("Creating a new cross reference");
+        if (user != null) {
+            logger.debug("User is logged in");
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(crossReferenceService.create(newCrossReferenceInputDto, user.id()));
     }
 

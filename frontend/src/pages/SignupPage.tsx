@@ -19,8 +19,9 @@ import {
   FieldLabel,
   FieldError,
 } from "@/components/ui/field";
-import MainBg from "@/assets/bg-main.svg";
+import MainBg from "@/assets/main-bg-v2.png";
 import { BACKEND_BASE_URL } from "@/lib/constants.ts";
+import {fetchData} from "@/lib/utils.ts";
 
 const signupSchema = z.object({
   username: z.string().min(2, "Username must be at least 2 characters"),
@@ -48,11 +49,10 @@ export default function SignupPage() {
     setServerError(null);
 
     try {
-      const response = await fetch(`${BACKEND_BASE_URL}api/auth/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const response = await fetchData(`${BACKEND_BASE_URL}api/auth/signup`,
+        "POST",
+        JSON.stringify(data),
+      );
 
       const result = await response.json();
 
@@ -73,7 +73,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-screen items-center justify-center bg-cover bg-bottom bg-no-repeat p-4"
+    <div className="flex min-h-screen w-screen items-center justify-center font-geist bg-cover bg-bottom bg-no-repeat p-4"
 
          style={{
            backgroundImage: `url(${MainBg})`,
@@ -84,7 +84,7 @@ export default function SignupPage() {
         <CardHeader>
           <CardTitle>Create an account</CardTitle>
           <CardDescription>
-            Enter your details to get started with TakeMyBible.
+            Enter your details to get started with <span className={" text-yellow-300 font-bold text-lg"}>Isaiah1:18</span>.
           </CardDescription>
         </CardHeader>
         <CardContent>

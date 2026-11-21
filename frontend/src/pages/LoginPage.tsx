@@ -6,7 +6,7 @@ import { Link, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import MainBg from "@/assets/bg-main.svg";
+import MainBg from "@/assets/main-bg-v2.png";
 import { BACKEND_BASE_URL } from "@/lib/constants.ts";
 import {
   Card,
@@ -97,14 +97,14 @@ export default function LoginPage() {
 
   return (
     <div
-      className="flex min-h-screen w-screen items-center justify-center bg-cover bg-bottom bg-no-repeat p-4"
-      style={{ backgroundImage: `url(${MainBg})` }}
+        className="flex min-h-screen w-full items-center justify-center font-geist bg-cover bg-bottom bg-no-repeat p-4"
+        style={{ backgroundImage: `url(${MainBg})` }}
     >
-      <Card className=" bg-yellow">
+      <Card className="w-full max-w-md ">
         <CardHeader>
-          <CardTitle>Welcome back</CardTitle>
-          <CardDescription>
-            Log in to your TakeMyBible account.
+          <CardTitle className={"font-geist"}>Welcome back</CardTitle>
+          <CardDescription className={"font-geist"}>
+            Log in to your <span className={" text-yellow-300 font-bold text-lg"}>Isaiah1:18</span> account.
           </CardDescription>
         </CardHeader>
         <CardContent>

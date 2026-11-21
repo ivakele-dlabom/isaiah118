@@ -53,7 +53,13 @@ export const SearchNextPassage = ({
         console.log("Verify verse")
 
         const [bookName, chapterVerse] = value.split(" ")
+        if (!chapterVerse) {
+            return
+        }
         const [ch, ver] = chapterVerse.split(":");
+        if (!ch || !ver) {
+            return
+        }
         const bookId = findBookIdFromBookName(bookName) + 1;
         const response = await fetchData( `${BACKEND_BASE_URL}api/kjv/verses/${bookId}/${ch}/${ver}`)
         if (response.ok) {

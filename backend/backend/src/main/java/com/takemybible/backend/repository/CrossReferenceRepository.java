@@ -40,12 +40,12 @@ public interface CrossReferenceRepository extends JpaRepository<CrossReference, 
 
 
     @Query("""
-    select count(c) > 0 from CrossReference c
-    where c.createdBy = :userId
-      and c.fromBook = :fromBook and c.fromChapter = :fromChapter and c.fromVerse = :fromVerse
-      and c.toBook = :toBook and c.toChapter = :toChapter
-      and c.toVerseStart = :start and c.toVerseEnd = :end
-    """)
+select c from CrossReference c
+where c.createdBy = :userId
+  and c.fromBook = :fromBook and c.fromChapter = :fromChapter and c.fromVerse = :fromVerse
+  and c.toBook = :toBook and c.toChapter = :toChapter
+  and c.toVerseStart = :start and c.toVerseEnd = :end
+""")
     Optional<CrossReference> findDuplicate(@Param("userId") Long userId,
                             @Param("fromBook") String fromBook,
                             @Param("fromChapter") Integer fromChapter,

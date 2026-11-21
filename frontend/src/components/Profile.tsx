@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { BadgeCheck, LogIn, LogOut } from "lucide-react";
+import {  LogIn, LogOut } from "lucide-react";
 
 import { useAuth } from "@/contexts/AuthContext.tsx";
 import {
@@ -53,15 +53,6 @@ export function NavUser({ user }: { user: AuthUser }) {
                             </span>
                         </div>
                     </DropdownMenuLabel>
-                </DropdownMenuGroup>
-
-                <DropdownMenuSeparator />
-
-                <DropdownMenuGroup>
-                    <DropdownMenuItem render={<Link to="/account" />}>
-                        <BadgeCheck />
-                        Account
-                    </DropdownMenuItem>
                 </DropdownMenuGroup>
 
                 <DropdownMenuSeparator />

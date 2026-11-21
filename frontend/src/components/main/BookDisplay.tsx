@@ -94,7 +94,7 @@ export const BookDisplay = ({ className = "" }: Props) => {
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button variant="outline" className="h-12 flex-row font-bold text-4xl">
+              <Button variant="outline" className="h-8 flex-row font-bold text-2xl">
                 <span className="pb-3 pl-6 pr-3 fill-gray-500">{currentBook?.name}</span>
                 <ChevronDown className="size-6" />
               </Button>
@@ -118,7 +118,7 @@ export const BookDisplay = ({ className = "" }: Props) => {
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button variant="outline" className="h-10 flex-row font-bold text-2xl">
+              <Button variant="outline" className="h-8 flex-row font-bold text-xl">
                 <span className="pb-3 pl-6 pr-3 fill-gray-500 outline-none">
                   {"Chapter: " + (chapterNumber ?? 1)}
                 </span>

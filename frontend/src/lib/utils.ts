@@ -13,7 +13,8 @@ type HttpMethod = "GET" | "HEAD" | "POST" | "PUT" | "DELETE";
 export async function fetchData(
     url: string,
     method: HttpMethod = "GET",
-    body?: unknown
+    body?: unknown,
+    signal?: AbortSignal
 ): Promise<Response> {
     const token = localStorage.getItem("token");
     const res = await fetch(url, {
@@ -23,6 +24,7 @@ export async function fetchData(
             ...(token && { Authorization: `Bearer ${token}` }),
         },
         body: body !== undefined ? JSON.stringify(body) : undefined,
+        signal
     });
     if (res.status === 401 && token) {
         window.dispatchEvent(new Event("auth:expired")); // token was sent but rejected

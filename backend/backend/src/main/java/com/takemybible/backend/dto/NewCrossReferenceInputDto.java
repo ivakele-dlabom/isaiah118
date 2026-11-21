@@ -14,7 +14,6 @@ import java.util.Objects;
 
 @Data
 public final class NewCrossReferenceInputDto {
-    private final @NotNull Long createdBy;
     private final @NotBlank String fromBook;
     private final @NotNull
     @Positive Integer fromChapter;
@@ -30,13 +29,12 @@ public final class NewCrossReferenceInputDto {
     private final @NotNull
     @Positive Integer toVerse;
     private final @NotNull
-    @Positive Integer votes;
+    Integer votes;
     private final String connectionType;
     private final Confidence confidence;
     private final String[] themeTags;
 
     public NewCrossReferenceInputDto(
-            @NotNull Long createdBy,
             @NotBlank String fromBook,
             @NotNull @Positive Integer fromChapter,
             @NotNull @Positive Integer fromVerse,
@@ -52,7 +50,6 @@ public final class NewCrossReferenceInputDto {
 
 
     ) {
-        this.createdBy = createdBy;
         this.fromBook = fromBook;
         this.fromChapter = fromChapter;
         this.fromVerse = fromVerse;
@@ -73,10 +70,6 @@ public final class NewCrossReferenceInputDto {
             return true; // nothing to compare; @NotNull handles start, end is optional
         }
         return toVerseStart <= toVerseEnd;
-    }
-
-    public @NotNull Long createdBy() {
-        return createdBy;
     }
 
     public @NotBlank String fromBook() {
@@ -132,7 +125,7 @@ public final class NewCrossReferenceInputDto {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (NewCrossReferenceInputDto) obj;
-        return Objects.equals(this.createdBy, that.createdBy) &&
+        return
                 Objects.equals(this.fromBook, that.fromBook) &&
                 Objects.equals(this.fromChapter, that.fromChapter) &&
                 Objects.equals(this.fromVerse, that.fromVerse) &&
@@ -149,13 +142,12 @@ public final class NewCrossReferenceInputDto {
 
     @Override
     public int hashCode() {
-        return Objects.hash(createdBy, fromBook, fromChapter, fromVerse, toBook, toChapter, toVerseStart, toVerseEnd, toVerse, votes, connectionType, confidence, themeTags);
+        return Objects.hash( fromBook, fromChapter, fromVerse, toBook, toChapter, toVerseStart, toVerseEnd, toVerse, votes, connectionType, confidence, themeTags);
     }
 
     @Override
     public String toString() {
         return "NewCrossReferenceInputDto[" +
-                "createdBy=" + createdBy + ", " +
                 "fromBook=" + fromBook + ", " +
                 "fromChapter=" + fromChapter + ", " +
                 "fromVerse=" + fromVerse + ", " +

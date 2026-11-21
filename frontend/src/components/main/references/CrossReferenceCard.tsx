@@ -68,7 +68,7 @@ export default function CrossReferenceCard({
         async function getVerses() {
             try {
                 const url = `${BACKEND_BASE_URL}api/${translation.toLowerCase()}/verses/${bookId}/${reference.toChapter}/${reference.toVerseStart}/${reference.toVerseEnd}`;
-                const response = await fetch(url, { signal: controller.signal });
+                const response = await fetchData(url,"GET", undefined,  controller.signal);
                 if (!response.ok) {
                     setVerseText([]);
                     return;

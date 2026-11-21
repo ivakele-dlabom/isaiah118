@@ -78,7 +78,7 @@ export default function CrossReferences() {
     }
 
     return (
-       <section  className={`p-4 h-130 w-140 font-geist  overflow-y-auto 
+       <section  className={`p-4 h-130 w-full font-geist  overflow-y-auto 
         transition-all
         duration-500
         [&::-webkit-scrollbar]:h-[6px] 

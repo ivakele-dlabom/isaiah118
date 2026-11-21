@@ -7,7 +7,7 @@ interface Props {
 export const VerseFeed = ({}: Props) => {
     const [selectedFeed, setSelectedFeed] = useState<"comments" | "cross-references">("cross-references");
     return (
-        <section className="w-140 bg-white ">
+        <section className="w-full bg-white ">
             <div className={"flex flex-row items-center mx-auto w-fit"}>
                 <button onClick={() => setSelectedFeed("comments")} className={`hover:cursor-pointer font-bold p-2 font-geist-mono ${selectedFeed !== "comments" ? "text-gray-300": ""}`}>Comments</button>
                 <div className="w-px h-4 bg-gray-300 mx-4"></div>

@@ -7,7 +7,6 @@ import {fetchData, getErrorMessage} from "@/lib/utils.ts";
 import {BACKEND_BASE_URL} from "@/lib/constants.ts";
 import type {QueryObserverResult, RefetchOptions} from "@tanstack/react-query";
 
-/* ---------- Types ---------- */
 
 export type ConnectionType =
     | "Thematic Echo (Creation & Will)"
@@ -78,7 +77,6 @@ const STRENGTHS: Strength[] = ["MODERATE", "STRONG", "UNIVERSAL"];
 
 const DEFAULT_TAGS = ["Creation / Origin", "Sovereignty", "Parallel Phrasing", "Christological"];
 
-/* ---------- Helpers ---------- */
 
 /**
  * Parses "Revelation 4:11", "1 John 3:16-18" into parts that match the
@@ -154,7 +152,7 @@ export default function AddCrossReferenceModal({
                 await refetchCrossReferences();
                 return true;
             } else {
-
+                console.log("Can not submit new reference")
                 const message = await getErrorMessage(response);
                 toast.add({ type: "error", description: message });
                 return false;
