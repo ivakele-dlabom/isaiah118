@@ -30,9 +30,10 @@ public class SecurityConfig {
     private List<String> allowedOrigins;
 
     private final JwtAuthFilter jwtAuthFilter;
-
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
+    private final RateLimitFilter rateLimitFilter;
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter, RateLimitFilter rateLimitFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
+        this.rateLimitFilter = rateLimitFilter;
     }
 
     @Bean
@@ -46,7 +47,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/kjv/**", "/api/bible/**", "/api/comments/verse/**").permitAll()
                         .anyRequest().authenticated()     // default deny: every POST/PUT/DELETE needs a token
                 )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).exceptionHandling(e -> e.authenticationEntryPoint(
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                // We have the authenticated user context for rate limiting
+                
+                .addFilterAfter(rateLimitFilter, JwtAuthFilter.class)
+                .exceptionHandling(e -> e.authenticationEntryPoint(
                         new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
 
         return http.build();

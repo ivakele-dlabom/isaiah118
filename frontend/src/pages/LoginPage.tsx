@@ -100,7 +100,7 @@ export default function LoginPage() {
       className="flex min-h-screen w-screen items-center justify-center bg-cover bg-bottom bg-no-repeat p-4"
       style={{ backgroundImage: `url(${MainBg})` }}
     >
-      <Card className="">
+      <Card className=" bg-yellow">
         <CardHeader>
           <CardTitle>Welcome back</CardTitle>
           <CardDescription>
