@@ -23,9 +23,6 @@ public class KjvController {
         this.verseRepository = verseRepository;
     }
 
-    /**
-     * Returns all books in the KJV Bible.
-     */
     @GetMapping("/books")
     public ResponseEntity<List<Book>> getBooks() {
         List<Book> books = kjvRepository.findAllByOrderByIdAsc();

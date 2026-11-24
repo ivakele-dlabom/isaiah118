@@ -1,36 +1,19 @@
 package com.takemybible.backend.controller.comment;
 
-import com.takemybible.backend.dto.CommentRequest;
-import com.takemybible.backend.entity.BibleVerse;
-import com.takemybible.backend.entity.Comment;
-import com.takemybible.backend.entity.User;
-import com.takemybible.backend.repository.BibleVerseRepository;
 import com.takemybible.backend.repository.CommentRepository;
 import com.takemybible.backend.repository.UserRepository;
-import com.takemybible.backend.security.AuthenticatedUser;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/comments")
 public class CommentController {
 
     private final CommentRepository commentRepository;
-    private final BibleVerseRepository verseRepository;
     private final UserRepository userRepository;
 
     public CommentController(CommentRepository commentRepository,
-                             BibleVerseRepository verseRepository,
                              UserRepository userRepository) {
         this.commentRepository = commentRepository;
-        this.verseRepository = verseRepository;
         this.userRepository = userRepository;
     }
 

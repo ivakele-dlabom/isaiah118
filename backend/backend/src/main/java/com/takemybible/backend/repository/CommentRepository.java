@@ -1,6 +1,6 @@
 package com.takemybible.backend.repository;
 
-import com.takemybible.backend.entity.Comment;
+import com.takemybible.backend.entity.comment.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

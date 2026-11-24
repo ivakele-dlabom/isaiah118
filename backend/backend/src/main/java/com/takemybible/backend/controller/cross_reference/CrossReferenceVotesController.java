@@ -2,10 +2,7 @@ package com.takemybible.backend.controller.cross_reference;
 
 import com.takemybible.backend.security.AuthenticatedUser;
 import com.takemybible.backend.service.CrossReferenceService;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,9 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.takemybible.backend.entity.CrossReferenceVotes;
 import com.takemybible.backend.repository.CrossReferenceVotesRepository;
-import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @RestController

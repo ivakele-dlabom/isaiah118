@@ -2,7 +2,7 @@ package com.takemybible.backend.repository;
 import com.takemybible.backend.dto.CrossReferenceDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.takemybible.backend.entity.CrossReference;
+import com.takemybible.backend.entity.cross_reference.CrossReference;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,13 +12,10 @@ import java.util.Optional;
 
 public interface CrossReferenceRepository extends JpaRepository<CrossReference, Long> {
 
-    List<CrossReference> findByFromBookAndFromChapterAndFromVerse(
-        String fromBook, Integer fromChapter, Integer fromVerse
-    );
 
     @Modifying
     @Query("update CrossReference c set c.votes = c.votes + :delta where c.id = :id")
-    int addVotes(@Param("id") Long id, @Param("delta") int delta);
+    void addVotes(@Param("id") Long id, @Param("delta") int delta);
 
     @Query("""
         select new com.takemybible.backend.dto.CrossReferenceDto(

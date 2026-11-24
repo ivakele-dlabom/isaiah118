@@ -1,14 +1,11 @@
 package com.takemybible.backend.dto;
 
-import com.takemybible.backend.entity.Confidence;
-import jakarta.persistence.Column;
+import com.takemybible.backend.entity.cross_reference.Confidence;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.util.Objects;
 

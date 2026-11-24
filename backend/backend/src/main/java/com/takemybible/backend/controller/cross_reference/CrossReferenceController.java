@@ -12,8 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import com.takemybible.backend.entity.CrossReference;
-import com.takemybible.backend.repository.CrossReferenceRepository;
+import com.takemybible.backend.entity.cross_reference.CrossReference;
 
 import java.util.List;
 

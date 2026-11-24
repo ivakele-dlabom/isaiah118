@@ -2,13 +2,13 @@ package com.takemybible.backend.service;
 
 
 import com.takemybible.backend.dto.CrossReferenceDto;
-import com.takemybible.backend.entity.CrossReferenceVotes;
+import com.takemybible.backend.entity.cross_reference.CrossReferenceVotes;
 import com.takemybible.backend.repository.CrossReferenceVotesRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.takemybible.backend.dto.NewCrossReferenceInputDto;
-import com.takemybible.backend.entity.CrossReference;
-import com.takemybible.backend.entity.CrossReferenceExtras;
+import com.takemybible.backend.entity.cross_reference.CrossReference;
+import com.takemybible.backend.entity.cross_reference.CrossReferenceExtras;
 import com.takemybible.backend.repository.CrossReferenceExtrasRepository;
 import com.takemybible.backend.repository.CrossReferenceRepository;
 import org.jspecify.annotations.NonNull;
@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,11 +35,6 @@ public class CrossReferenceService {
 
     public void updateVotes(Long crossReferenceId, Integer value) {
         crossReferenceRepository.addVotes(crossReferenceId, value);
-//        Optional<CrossReference> crossReference = crossReferenceRepository.findById(crossReferenceId);
-//        crossReference.ifPresent(reference ->{
-//            reference.setVotes(reference.getVotes() + value);
-//            crossReferenceRepository.save(reference);
-//        });
 
     }
 
@@ -91,7 +85,7 @@ public class CrossReferenceService {
     }
 
     private static void applyExtras(CrossReferenceExtras extras, NewCrossReferenceInputDto dto) {
-        extras.setConfidence(dto.confidence());
+        extras.setConfidence(dto.getConfidence());
         extras.setConnectionType(dto.connectionType());
         extras.setThemeTags(dto.themeTags());
     }

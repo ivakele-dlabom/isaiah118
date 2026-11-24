@@ -1,4 +1,4 @@
-package com.takemybible.backend.entity;
+package com.takemybible.backend.entity.cross_reference;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -23,7 +23,7 @@ public class CrossReferenceExtras {
     private String connectionType;
 
     @Column(name = "confidence")
-    private  Confidence confidence ;
+    private Confidence confidence ;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "theme_tags", columnDefinition = "json")

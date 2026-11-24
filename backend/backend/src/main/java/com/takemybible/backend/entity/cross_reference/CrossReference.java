@@ -1,4 +1,4 @@
-package com.takemybible.backend.entity;
+package com.takemybible.backend.entity.cross_reference;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
