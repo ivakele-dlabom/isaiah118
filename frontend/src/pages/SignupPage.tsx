@@ -22,6 +22,7 @@ import {
 import MainBg from "@/assets/main-bg-v2.png";
 import { BACKEND_BASE_URL } from "@/lib/constants.ts";
 import {fetchData} from "@/lib/utils.ts";
+import {toast} from "@/components/ui/toast.tsx";
 
 const signupSchema = z.object({
   username: z.string().min(2, "Username must be at least 2 characters"),
@@ -59,6 +60,19 @@ export default function SignupPage() {
       if (!response.ok) {
         setServerError(result.error || "Signup failed");
         return;
+      }
+
+
+      if (response.status === 429) {
+        const retryAfter = response.headers.get("Retry-After"); // seconds, if the server sends it
+        toast.add({
+          type: "warning",
+          title: "Slow down",
+          description: retryAfter
+              ? `Too many requests. Try again in ${retryAfter} seconds.`
+              : "Too many requests. Please wait a moment and try again.",
+        });
+        return ;
       }
 
       login(result.token, {

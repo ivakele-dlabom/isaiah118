@@ -147,19 +147,29 @@ export default function AddCrossReferenceModal({
             const response = await fetchData(`${BACKEND_BASE_URL}api/kjv/cross-references/new`, "POST", newCrossReference);
 
             if (response.ok) {
-                toast.add({ type: "success", description: "Cross reference created"})
-                setVerseVerified(false)
+                toast.add({ type: "success", description: "Cross reference created" });
+                setVerseVerified(false);
                 await refetchCrossReferences();
                 return true;
-            } else {
-                console.log("Can not submit new reference")
-                const message = await getErrorMessage(response);
-                toast.add({ type: "error", description: message });
+            }
+
+            if (response.status === 429) {
+                const retryAfter = response.headers.get("Retry-After"); // seconds, if the server sends it
+                toast.add({
+                    type: "warning",
+                    title: "Slow down",
+                    description: retryAfter
+                        ? `Too many requests. Try again in ${retryAfter} seconds.`
+                        : "Too many requests. Please wait a moment and try again.",
+                });
                 return false;
             }
-        } catch (error) {
 
-            toast.add({type: "error", description: "Failed to create the cross reference" });
+            const message = await getErrorMessage(response);
+            toast.add({ type: "error", description: message });
+            return false;
+        } catch (error) {
+            toast.add({ type: "error", description: "Failed to create the cross reference" });
             return false;
         }
 

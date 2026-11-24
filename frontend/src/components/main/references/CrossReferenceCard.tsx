@@ -60,7 +60,7 @@ export default function CrossReferenceCard({
         const bookId = getBookId(reference.toBook);
         if (bookId === undefined || !translation) {
             return
-        }; // books not loaded yet
+        } // books not loaded yet
 
         const controller = new AbortController();
 
@@ -72,6 +72,19 @@ export default function CrossReferenceCard({
                 if (!response.ok) {
                     setVerseText([]);
                     return;
+                }
+
+
+                if (response.status === 429) {
+                    const retryAfter = response.headers.get("Retry-After"); // seconds, if the server sends it
+                    toast.add({
+                        type: "warning",
+                        title: "Slow down",
+                        description: retryAfter
+                            ? `Too many requests. Try again in ${retryAfter} seconds.`
+                            : "Too many requests. Please wait a moment and try again.",
+                    });
+                    return ;
                 }
 
                 const data: Verse[] = await response.json();
@@ -125,6 +138,18 @@ export default function CrossReferenceCard({
                 setReferenceVote(prevVote);
                 setNumberOfVotes(prevVotes);
                 toast.add({ type: "error", priority: "high", description: "Vote unsuccessful" });
+            }
+
+            if (response.status === 429) {
+                const retryAfter = response.headers.get("Retry-After"); // seconds, if the server sends it
+                toast.add({
+                    type: "warning",
+                    title: "Slow down",
+                    description: retryAfter
+                        ? `Too many requests. Try again in ${retryAfter} seconds.`
+                        : "Too many requests. Please wait a moment and try again.",
+                });
+                return;
             }
         } catch (e) {
             setReferenceVote(prevVote);

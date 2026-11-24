@@ -7,6 +7,7 @@ import {
 } from "@/lib/utils.ts";
 import {useBookNavigation} from "@/contexts/BookContext.tsx";
 import {BACKEND_BASE_URL} from "@/lib/constants.ts";
+import {toast} from "@/components/ui/toast.tsx";
 
 interface Props {
     inputRef: React.RefObject<HTMLInputElement | null>;
@@ -66,8 +67,19 @@ export const SearchNextPassage = ({
             // const verse: Verse = response.json();
             setVerseVerified(true);
 
-        } else {
+        }
 
+
+        if (response.status === 429) {
+            const retryAfter = response.headers.get("Retry-After"); // seconds, if the server sends it
+            toast.add({
+                type: "warning",
+                title: "Slow down",
+                description: retryAfter
+                    ? `Too many requests. Try again in ${retryAfter} seconds.`
+                    : "Too many requests. Please wait a moment and try again.",
+            });
+            return false;
         }
     }
 
